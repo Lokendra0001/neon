@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "emp" ADD COLUMN     "phoneNo" INTEGER NOT NULL DEFAULT 0;
