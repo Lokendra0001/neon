@@ -1,0 +1,27 @@
+name: Neon Preview Branch Migration
+on: [pull_request]
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # 1. This uses your API Key to create a branch and get the URL
+      - name: Create Neon Branch
+        id: create-branch
+        uses: neondatabase/create-branch-action@v5
+        with:
+          project_id: ${{ secrets.NEON_PROJECT_ID }}
+          api_key: ${{ secrets.NEON_API_KEY }}
+
+      # 2. Now Prisma uses that specific Branch URL to migrate
+      - name: Run Prisma Migration
+        run: |
+          npm install
+          npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ steps.create-branch.outputs.db_url }}
